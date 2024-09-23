@@ -1,230 +1,1000 @@
 {
-    "openapi": "3.0.1",
-    "info": {
-      "title": "BWK API",
-      "description": "Origin REST API to integrate all elements for business logic, ecommerce channels and so fort for Buswork",
-      "version": "1.0.2"
-    },
-    "servers": [
-      {
-        "url": "https://www.buswork.com.ar"
-      }
-    ],
-    "paths": {
-      "/api/atopems/orders/new": {
-        "post": {
-          "summary": "Process new order webhook for Atopem's",
-          "description": "Receives and processes new order data from a webhook.",
-          "operationId": "processNewOrder",
-          "requestBody": {
-            "description": "Order data",
-            "required": true,
+  "openapi": "3.0.0",
+  "info": {
+    "title": "BusWork API",
+    "version": "1.0.0",
+    "description": "API for BusWork operations"
+  },
+  "servers": [
+    {
+      "url": "https://buswork.com.ar/api"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "redirect": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "order_id": {
-                      "type": "integer"
+                    "message": {
+                      "type": "string"
                     },
-                    "order_creation_date": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "customer_id": {
-                      "type": "integer"
-                    },
-                    "order_items": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "sku": {
-                              "type": "string"
-                            },
-                            "qty": {
-                              "type": "integer"
-                            }
-                          },
-                          "required": ["sku", "qty"]
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
                         }
+                      }
+                    },
+                    "token": {
+                      "type": "string"
                     }
-                  },
-                  "required": ["order_id", "order_date", "client_id", "line_items"]
+                  }
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Webhook data received and processed",
-              "content": {
-                "text/plain": {
-                  "schema": {
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/check-auth": {
+      "post": {
+        "summary": "Check authentication status",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
                     "type": "string"
+                  }
+                },
+                "required": ["token"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isAuthenticated": {
+                      "type": "boolean"
+                    },
+                    "employee": {
+                      "type": "object",
+                      "properties": {
+                        "_id": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
+            }
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/atopems/orders/new/saas": {
+      "post": {
+        "summary": "Create a new order (SaaS)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully"
+          },
+          "500": {
+            "description": "Error processing order"
+          }
+        }
+      }
+    },
+    "/atopems/orders/new": {
+      "post": {
+        "summary": "Create a new order",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook data received and processed"
+          },
+          "500": {
+            "description": "Error processing webhook data"
+          }
+        }
+      }
+    },
+    "/atopems/products": {
+      "get": {
+        "summary": "Get products by SKU",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sku",
+            "schema": {
+              "type": "string"
             },
-            "500": {
-              "description": "Error processing webhook data",
-              "content": {
-                "text/plain": {
-                  "schema": {
+            "description": "Partial SKU to search for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/users/update": {
+      "put": {
+        "summary": "Update user information",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User updated successfully"
+          },
+          "500": {
+            "description": "Error updating user"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/users/new": {
+      "post": {
+        "summary": "Create a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "500": {
+            "description": "Error creating user"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/users/cart": {
+      "post": {
+        "summary": "Get user's cart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "customer_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["customer_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CartItem"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No cart data found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/users": {
+      "get": {
+        "summary": "Get users by name",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "user",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Partial name to search for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/vendedores": {
+      "get": {
+        "summary": "Get all admin users",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUser"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching vendedores"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/orders/batch": {
+      "get": {
+        "summary": "Get orders batch",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Date to filter orders (YYYY-MM-DD)"
+          },
+          {
+            "in": "query",
+            "name": "gecom_id",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Client ID to filter orders"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/atopems/pricing/v1/rules": {
+      "get": {
+        "summary": "Get pricing rules",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PricingRule"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new pricing rule",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricingRule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Rule created successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/rules/{id}": {
+      "get": {
+        "summary": "Get a specific pricing rule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricingRule"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Rule not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a pricing rule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricingRule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rule updated successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a pricing rule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "force",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Rule deleted successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/rules/user/{userId}": {
+      "get": {
+        "summary": "Get pricing rules for a specific user",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PricingRule"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/conditions-consult/user-roles": {
+      "get": {
+        "summary": "Get possible user roles",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
                     "type": "string"
                   }
                 }
               }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/conditions-consult/marcas": {
+      "get": {
+        "summary": "Get brands",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/conditions-consult/product-categories": {
+      "get": {
+        "summary": "Get product categories",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/conditions-consult/users": {
+      "get": {
+        "summary": "Get users for rules",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/atopems/pricing/v1/rules/get-discounts": {
+      "post": {
+        "summary": "Get discounts for a cart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Cart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscountedCart"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "NewOrder": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "integer"
+          },
+          "customer_note": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "payment_method": {
+            "type": "string"
+          },
+          "payment_method_title": {
+            "type": "string"
+          },
+          "set_paid": {
+            "type": "boolean"
+          },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineItem"
+            }
+          },
+          "shipping_lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShippingLine"
             }
           }
         }
       },
-      "/api/atopems/orders/batch": {
-        "get": {
-          "summary": "Retrieve batch orders",
-          "description": "Fetches a batch of orders based on query parameters: either or nor",
-          "operationId": "retrieveBatchOrders",
-          "parameters": [
-            {
-              "name": "date",
-              "in": "query",
-              "description": "Filter orders by date",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "format": "date: YYYY-MM-DD"
-              }
-            },
-            {
-              "name": "gecom_id",
-              "in": "query",
-              "description": "Filter orders by client ID",
-              "required": false,
-              "schema": {
-                "type": "string"
-              }
+      "WebhookOrder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "customer_id": {
+            "type": "integer"
+          },
+          "date_created_gmt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "line_items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineItem"
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "Orders retrieved successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "customer_id": {
-                          "type": "integer"
-                        },
-                        "order_items": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "sku": {
-                                "type": "string"
-                              },
-                              "qty": {
-                                "type": "integer"
-                              }
-                            }
-                          }
-                        },
-                        "order_creation_date": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "gecom_id": {
-                            "type": "integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Invalid query parameters",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "401": {
-                "description": "Invalid or missing API Key",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-              }
-            },
-            "406": {
-                "description": "Invalid Accept headers",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-              }
-            },
-            "500": {
-              "description": "Error processing request",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message": {
-                        "type": "string"
-                      },
-                      "error": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                }
-              }
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "SKU": {
+            "type": "string"
+          },
+          "price_atopems": {
+            "type": "number"
+          },
+          "stock_atopems": {
+            "type": "integer"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CartItem": {
+        "type": "object",
+        "properties": {
+          "SKU": {
+            "type": "string"
+          },
+          "qty": {
+            "type": "integer"
+          },
+          "price_atopems": {
+            "type": "number"
+          },
+          "stock_atopems": {
+            "type": "integer"
+          }
+        }
+      },
+      "AdminUser": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "order_id": {
+            "type": "integer"
+          },
+          "gecom_id": {
+            "type": "integer"
+          },
+          "order_items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineItem"
             }
           },
-          "security": [
-            {
-              "apiKey": []
+          "order_creation_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "customer_id": {
+            "type": "integer"
+          }
+        }
+      },
+      "LineItem": {
+        "type": "object",
+        "properties": {
+          "product_id": {
+            "type": "integer"
+          },
+          "SKU": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "subtotal": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        }
+      },
+      "ShippingLine": {
+        "type": "object",
+        "properties": {
+          "method_id": {
+            "type": "string"
+          },
+          "method_title": {
+            "type": "string"
+          },
+          "total": {
+            "type": "string"
+          }
+        }
+      },
+      "PricingRule": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "conditions": {
+            "type": "object"
+          },
+          "actions": {
+            "type": "object"
+          }
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItem"
             }
-          ]
+          }
+        }
+      },
+      "DiscountedCart": {
+        "type": "object",
+        "properties": {
+          "original_total": {
+            "type": "number"
+          },
+          "discounted_total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DiscountedCartItem"
+            }
+          }
+        }
+      },
+      "DiscountedCartItem": {
+        "type": "object",
+        "properties": {
+          "SKU": {
+            "type": "string"
+          },
+          "original_price": {
+            "type": "number"
+          },
+          "discounted_price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer"
+          }
         }
       }
     },
-    "components": {
-      "securitySchemes": {
-        "apiKey": {
-          "type": "apiKey",
-          "name": "api-key",
-          "in": "header"
-        }
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api-key"
       }
     }
   }
-  
+}

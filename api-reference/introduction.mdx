@@ -1,33 +1,56 @@
 ---
 title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+description: 'Welcome to the BusWork API documentation'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+# Introduction to BusWork API
 
-## Welcome
+Welcome to the BusWork API documentation. This API provides a comprehensive set of endpoints to interact with the BusWork system, allowing you to manage orders, products, users, and pricing rules.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Base URL
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+All API requests should be made to:
+
+```
+https://buswork.com.ar/api
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+Most endpoints require authentication using an API key. Include your API key in the `api-key` header of your requests.
+
+```http
+api-key: YOUR_API_KEY_HERE
+```
+
+## Response Format
+
+All responses are returned in JSON format.
+
+## Rate Limiting
+
+The API implements rate limiting to ensure fair usage. Please refer to the specific endpoint documentation for rate limit details.
+
+## Error Handling
+
+In case of an error, the API will return an appropriate HTTP status code along with a JSON response containing more details about the error.
+
+Example error response:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "error": "Invalid API key"
+}
 ```
+
+## Endpoints
+
+The API is organized into the following main sections:
+
+- Authentication
+- Orders
+- Products
+- Users
+- Pricing Rules
+
+Each section has its own set of endpoints. Please refer to the individual sections for detailed information on available endpoints and their usage.
