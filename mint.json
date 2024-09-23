@@ -51,57 +51,54 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "development"
-      ]
-    },
-    {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
-    },
-    {
       "group": "API Reference",
       "pages": [
-        "api-reference/endpoint/user-login",
-        "api-reference/endpoint/check-authentication-status",
-        "api-reference/endpoint/create-a-new-order-saas",
-        "api-reference/endpoint/create-a-new-order",
-        "api-reference/endpoint/get-products-by-sku",
-        "api-reference/endpoint/update-user-information",
-        "api-reference/endpoint/create-a-new-user",
-        "api-reference/endpoint/get-users-cart",
-        "api-reference/endpoint/get-users-by-name",
-        "api-reference/endpoint/get-all-admin-users",
-        "api-reference/endpoint/get-orders-batch",
-        "api-reference/endpoint/get-pricing-rules",
-        "api-reference/endpoint/create-a-new-pricing-rule",
-        "api-reference/endpoint/get-a-specific-pricing-rule",
-        "api-reference/endpoint/update-a-pricing-rule",
-        "api-reference/endpoint/delete-a-pricing-rule",
-        "api-reference/endpoint/get-pricing-rules-for-a-specific-user",
-        "api-reference/endpoint/get-possible-user-roles",
-        "api-reference/endpoint/get-brands",
-        "api-reference/endpoint/get-product-categories",
-        "api-reference/endpoint/get-users-for-rules",
-        "api-reference/endpoint/get-discounts-for-a-cart"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "Auth",
+        {
+          "group": "Auth",
+          "pages" : [
+            "api-reference/endpoint/user-login",
+            "api-reference/endpoint/check-authentication-status"
+          ]
+        },
+        "Pedidos",
+        {
+          "group": "Pedidos",
+          "pages": [
+            "api-reference/endpoint/create-a-new-order-saas",
+            "api-reference/endpoint/create-a-new-order",
+            "api-reference/endpoint/get-orders-batch",
+            "api-reference/endpoint/get-products-by-sku",
+            "api-reference/endpoint/update-user-information",
+            "api-reference/endpoint/create-a-new-user",
+            "api-reference/endpoint/get-users-cart",
+            "api-reference/endpoint/get-users-by-name"
+          ]
+        },
+        "Reglas de precios",
+        {
+          "group": "Reglas de precios",
+          "pages": [
+            "api-reference/endpoint/get-pricing-rules",
+            "api-reference/endpoint/create-a-new-pricing-rule",
+            "api-reference/endpoint/get-a-specific-pricing-rule",
+            "api-reference/endpoint/update-a-pricing-rule",
+            "api-reference/endpoint/delete-a-pricing-rule"
+          ]
+        },
+        "Manejo de usuarios",
+        {
+          "group": "Manejo de usuarios",
+          "pages": [
+            "api-reference/endpoint/get-all-admin-users",       
+            "api-reference/endpoint/get-pricing-rules-for-a-specific-user",
+            "api-reference/endpoint/get-possible-user-roles",
+            "api-reference/endpoint/get-brands",
+            "api-reference/endpoint/get-product-categories",
+            "api-reference/endpoint/get-users-for-rules",
+            "api-reference/endpoint/get-discounts-for-a-cart"
+          ]
+        }
       ]
     }
   ],
