@@ -1,0 +1,230 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "BWK API",
+      "description": "Origin REST API to integrate all elements for business logic, ecommerce channels and so fort for Buswork",
+      "version": "1.0.2"
+    },
+    "servers": [
+      {
+        "url": "https://www.buswork.com.ar"
+      }
+    ],
+    "paths": {
+      "/api/atopems/orders/new": {
+        "post": {
+          "summary": "Process new order webhook for Atopem's",
+          "description": "Receives and processes new order data from a webhook.",
+          "operationId": "processNewOrder",
+          "requestBody": {
+            "description": "Order data",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "order_id": {
+                      "type": "integer"
+                    },
+                    "order_creation_date": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "customer_id": {
+                      "type": "integer"
+                    },
+                    "order_items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "sku": {
+                              "type": "string"
+                            },
+                            "qty": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": ["sku", "qty"]
+                        }
+                    }
+                  },
+                  "required": ["order_id", "order_date", "client_id", "line_items"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Webhook data received and processed",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Error processing webhook data",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/atopems/orders/batch": {
+        "get": {
+          "summary": "Retrieve batch orders",
+          "description": "Fetches a batch of orders based on query parameters: either or nor",
+          "operationId": "retrieveBatchOrders",
+          "parameters": [
+            {
+              "name": "date",
+              "in": "query",
+              "description": "Filter orders by date",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "format": "date: YYYY-MM-DD"
+              }
+            },
+            {
+              "name": "gecom_id",
+              "in": "query",
+              "description": "Filter orders by client ID",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Orders retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "customer_id": {
+                          "type": "integer"
+                        },
+                        "order_items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "sku": {
+                                "type": "string"
+                              },
+                              "qty": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        },
+                        "order_creation_date": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "gecom_id": {
+                            "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid query parameters",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+                "description": "Invalid or missing API Key",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+              }
+            },
+            "406": {
+                "description": "Invalid Accept headers",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+              }
+            },
+            "500": {
+              "description": "Error processing request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "security": [
+            {
+              "apiKey": []
+            }
+          ]
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "apiKey": {
+          "type": "apiKey",
+          "name": "api-key",
+          "in": "header"
+        }
+      }
+    }
+  }
+  
